@@ -1,0 +1,6 @@
+/credentials.json
+/package-lock.json
+/token.json
+/node_modules/
+/.DS_Store
+/.idea/

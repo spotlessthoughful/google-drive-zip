@@ -1,0 +1,19 @@
+{
+  "name": "drive",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/local-auth": "^2.1.0",
+    "adm-zip": "^0.5.9",
+    "google-auth-library": "^8.5.2",
+    "googleapis": "^105.0.0",
+    "process": "^0.11.10"
+  }
+}
