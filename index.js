@@ -56,7 +56,6 @@ async function listFiles(authClient) {
         const queryString = `'${folderID}' in parents and name contains \'.pdf\'`;
         const drive = google.drive({version: 'v3', auth: authClient});
         const res = await drive.files.list({
-            pageSize: 2,
             fields: 'nextPageToken, files(id, name)',
             q: queryString,
         });
