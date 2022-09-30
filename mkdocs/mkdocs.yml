@@ -1,0 +1,15 @@
+site_name: Google Drive Zip
+site_url: https://example.com/
+nav:
+  - Home: index.md
+  - About: about.md
+theme:
+  name: readthedocs
+  nav_style: dark
+  highlightjs: true
+  hljs_languages:
+    - yaml
+    - javascript
+    - css
+    - html
+    - json
