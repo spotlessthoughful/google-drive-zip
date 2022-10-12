@@ -8,7 +8,7 @@ const admZip = require('adm-zip');
 const SCOPES = ['https://www.googleapis.com/auth/drive'];
 const TOKEN_PATH = path.join(process.cwd(), 'token.json');
 const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
-const folderIDs = []
+const folders = []
 let folderContents = [];
 const keyword = 'Books';
 
@@ -60,8 +60,11 @@ async function listFoldersWithKeyword(authClient) {
             fields: 'nextPageToken, files(id, name)',
             spaces: 'drive',
         });
-        for (const file of res.data.files) {
-            folderIDs.push(file.id);
+        for (const folder of res.data.files) {
+            if (folder.name === keyword) {
+                folders.push(folder);
+                console.log(`Found folder ${folder.name} with ID ${folder.id}`);
+            }
         }
         return res.data.files;
     } catch (err) {
@@ -72,9 +75,9 @@ async function listFoldersWithKeyword(authClient) {
 
 async function listFiles() {
     let client = await authorize();
-    for (const folderID of folderIDs) {
-        console.log(`Listing files in folder ${folderID}`);
-        const queryString = `'${folderID}' in parents and name contains \'.pdf\'`;
+    for (const folder of folders) {
+        console.log(`Listing files in folder ${folder.name} with ID ${folder.id}`);
+        const queryString = `'${folder.id}' in parents and name contains \'.pdf\'`;
         const drive = google.drive({version: 'v3', auth: client});
         const res = await drive.files.list({
             fields: 'nextPageToken, files(id, name)',
@@ -86,7 +89,7 @@ async function listFiles() {
             continue;
         }
         let folderFiles = {
-            FolderID: folderID,
+            FolderID: folder.id,
             Files: files
         }
         folderContents.push(folderFiles);
