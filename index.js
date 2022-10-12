@@ -70,10 +70,12 @@ async function listFoldersWithKeyword(authClient) {
     }
 }
 
-async function listFiles(authClient) {
+async function listFiles() {
+    let client = await authorize();
     for (const folderID of folderIDs) {
+        console.log(`Listing files in folder ${folderID}`);
         const queryString = `'${folderID}' in parents and name contains \'.pdf\'`;
-        const drive = google.drive({version: 'v3', auth: authClient});
+        const drive = google.drive({version: 'v3', auth: client});
         const res = await drive.files.list({
             fields: 'nextPageToken, files(id, name)',
             q: queryString,
