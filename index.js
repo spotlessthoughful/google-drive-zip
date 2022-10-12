@@ -5,12 +5,12 @@ const process = require('process');
 const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
 const admZip = require('adm-zip');
-
 const SCOPES = ['https://www.googleapis.com/auth/drive'];
 const TOKEN_PATH = path.join(process.cwd(), 'token.json');
 const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
 const folderIDs = []
 let folderContents = [];
+const keyword = 'Books';
 
 
 async function loadSavedCredentialsIfExist() {
@@ -49,6 +49,26 @@ async function authorize() {
         await saveCredentials(client);
     }
     return client;
+}
+
+async function listFoldersWithKeyword(authClient) {
+    const drive = google.drive({version: 'v3', auth: authClient});
+    try {
+        let queryString = `name contains \'${keyword}\' and mimeType = \'application/vnd.google-apps.folder\'`;
+        const res = await drive.files.list({
+            q: queryString,
+            fields: 'nextPageToken, files(id, name)',
+            spaces: 'drive',
+        });
+        for (const file of res.data.files) {
+            folderIDs.push(file.id);
+        }
+        console.log(folderIDs);
+        return res.data.files;
+    } catch (err) {
+        console.error('The API returned an error: ' + err);
+        throw err;
+    }
 }
 
 async function listFiles(authClient) {
@@ -148,4 +168,5 @@ async function uploadZip() {
         }
     }
 }
-authorize().then(listFiles).then(downloadFiles).then(createZip).then(uploadZip).catch(console.error);
+
+authorize().then(listFoldersWithKeyword).then(listFiles).then(downloadFiles).then(createZip).then(uploadZip).catch(console.error);
