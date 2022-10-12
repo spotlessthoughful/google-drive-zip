@@ -63,7 +63,6 @@ async function listFoldersWithKeyword(authClient) {
         for (const file of res.data.files) {
             folderIDs.push(file.id);
         }
-        console.log(folderIDs);
         return res.data.files;
     } catch (err) {
         console.error('The API returned an error: ' + err);
