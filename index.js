@@ -112,7 +112,11 @@ async function downloadFiles() {
             console.log(`Downloading file ${file.name}`);
             try {
                 const dest = fs.createWriteStream(path.join(process.cwd(), folder.FolderID, file.name));
-                const downloadedFile = await drive.files.get({fileId: file.id, alt: 'media', headers: { 'Accept-Encoding': 'gzip'}}, {responseType: 'stream'});
+                const downloadedFile = await drive.files.get({
+                    fileId: file.id,
+                    alt: 'media',
+                    headers: {'Accept-Encoding': 'gzip'}
+                }, {responseType: 'stream'});
                 downloadedFile.data.on('end', () => {
                     console.log(`Download ${file.name} complete`);
                 }).on('error', err => {
@@ -173,4 +177,15 @@ async function uploadZip() {
     }
 }
 
-authorize().then(listFoldersWithKeyword).then(listFiles).then(downloadFiles).then(createZip).then(uploadZip).catch(console.error);
+async function cleanUp() {
+    for (const folder of folders) {
+        console.log(`Deleting folder ${folder.name} with ID ${folder.id}`);
+        try {
+            await fsPromises.rmdir(folder.id, {recursive: true});
+        } catch (err) {
+            console.log(err);
+        }
+    }
+}
+
+authorize().then(listFoldersWithKeyword).then(listFiles).then(downloadFiles).then(createZip).then(uploadZip).then(cleanUp).catch(console.error);
